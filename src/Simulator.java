@@ -3,6 +3,6 @@ public interface Simulator {
 
     void step() throws SMCException;
     void execute() throws SMCException;
-
+    void executeWithin(Integer maximumSteps) throws SMCException;
     void printState();
 }

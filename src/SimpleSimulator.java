@@ -15,18 +15,20 @@ public class SimpleSimulator implements Simulator {
 
     @Override
     public void load() throws SMCException {
-        int address = 0;
+        int loaded = 0;
         do {
             Integer value = this.loader.load();
             if (value == null)
                 return;
-            this.memory.set(address, value);
-            address += 1;
+            this.memory.set(loaded, value);
+            loaded += 1;
         } while (true);
     }
 
     @Override
     public void step() throws SMCException {
+        if (this.halt)
+            throw new SMCException.AlreadyHalted();
         if (this.pc >= this.memory.size())
             return;
 
@@ -43,22 +45,40 @@ public class SimpleSimulator implements Simulator {
         else if (instruction instanceof InstructionO)
             this.executeO((InstructionO) instruction);
         else
-            throw new SMCException.NotImplemented();
+            throw new SMCException.InstructionTypeNotFound();
     }
 
     @Override
     public void execute() throws SMCException {
-        do {
-            this.step();
+        while (!this.halt) {
             this.printState();
-        } while (!this.halt);
+            this.step();
+        }
     }
 
     @Override
+    public void executeWithin(Integer maximumSteps) throws SMCException {
+        for (int step = 0; step <= maximumSteps && !this.halt; step++) {
+            this.printState();
+            this.step();
+        }
+        if (!this.halt)
+            throw new SMCException.NotHaltedWithinLimit();
+    }
+
+
+    @Override
     public void printState() {
-        System.out.printf("Halted: %b\n", this.halt);
-        System.out.print(this.register);
-        System.out.println();
+        int value = this.memory.get(this.pc);
+        try {
+            Instruction instruction = loader.decode(value);
+            System.out.printf("PC: %d\n", this.pc);
+            System.out.printf("Instruction: %s\n", instruction);
+            System.out.printf("Halted: %b\n", this.halt);
+            System.out.print(this.register);
+            System.out.println();
+        } catch (SMCException ignored) {
+        }
     }
 
     private void executeR(InstructionR instruction) throws SMCException {
@@ -75,7 +95,7 @@ public class SimpleSimulator implements Simulator {
                 Integer result = ~(regA & regB);
                 this.register.set(instruction.rd(), result);
             }
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidRInstruction();
         }
     }
 
@@ -103,13 +123,13 @@ public class SimpleSimulator implements Simulator {
                 int offset = instruction.offset();
                 this.pc = this.pc + offset;
             }
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidIInstruction();
         }
     }
 
     private void executeJ(InstructionJ instruction) throws SMCException {
         if (instruction.name() != InstructionName.JALR)
-            throw new SMCException.NotImplemented();
+            throw new SMCException.InvalidJInstruction();
         Integer regA = this.register.get(instruction.rs());
         this.register.set(instruction.rt(), this.pc);
         if (instruction.rt() != instruction.rs())
@@ -121,7 +141,7 @@ public class SimpleSimulator implements Simulator {
             case HALT -> this.halt = true;
             case NOOP -> {
             }
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidOInstruction();
         }
     }
 }

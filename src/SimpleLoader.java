@@ -55,7 +55,7 @@ public abstract class SimpleLoader implements Loader {
             case I -> parseI(value);
             case J -> parseJ(value);
             case O -> parseO(value);
-            case Undefined -> throw new SMCException.NotImplemented();
+            case Undefined -> throw new SMCException.InstructionTypeNotFound();
         };
     }
 
@@ -66,7 +66,7 @@ public abstract class SimpleLoader implements Loader {
         RegisterIndex rt = getRt(value);
         return switch (name) {
             case ADD, NAND -> new InstructionR(name, rd, rs, rt);
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidRInstruction();
         };
     }
 
@@ -77,7 +77,7 @@ public abstract class SimpleLoader implements Loader {
         RegisterIndex rt = getRt(value);
         return switch (name) {
             case LW, SW, BEQ -> new InstructionI(name, offset, rt, rs);
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidIInstruction();
         };
     }
 
@@ -86,7 +86,7 @@ public abstract class SimpleLoader implements Loader {
         RegisterIndex rs = getRs(value);
         RegisterIndex rt = getRt(value);
         if (name != InstructionName.JALR)
-            throw new SMCException.NotImplemented();
+            throw new SMCException.InvalidJInstruction();
         return new InstructionJ(name, rt, rs);
     }
 
@@ -94,7 +94,7 @@ public abstract class SimpleLoader implements Loader {
         InstructionName name = parseName(value);
         return switch (name) {
             case HALT, NOOP -> new InstructionO(name);
-            default -> throw new SMCException.NotImplemented();
+            default -> throw new SMCException.InvalidOInstruction();
         };
 
     }

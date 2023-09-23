@@ -4,4 +4,6 @@ public interface Memory {
     Integer set(Integer address, Integer value);
 
     Integer size();
+
+    String toString(Integer offset, Integer size);
 }

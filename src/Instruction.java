@@ -15,4 +15,6 @@ public abstract class Instruction {
     }
 
     public abstract Integer toInteger();
+
+    public abstract String toString();
 }

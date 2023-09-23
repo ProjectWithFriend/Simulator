@@ -26,4 +26,9 @@ public class InstructionI extends Instruction {
                 (this.rt.ordinal() & 0b111) << 16 |
                 (this.offset & 0xffff);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %s %d", this.name, this.rs, this.rt, this.offset);
+    }
 }

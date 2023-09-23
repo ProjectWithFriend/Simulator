@@ -8,4 +8,9 @@ public class InstructionO extends Instruction {
     public Integer toInteger() {
         return (this.name.ordinal() & 0b111) << 22;
     }
+
+    @Override
+    public String toString() {
+        return this.name.toString();
+    }
 }
