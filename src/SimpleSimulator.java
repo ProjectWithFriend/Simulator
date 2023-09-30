@@ -4,6 +4,7 @@ public class SimpleSimulator implements Simulator {
     private final Memory memory;
     private int pc;
     private boolean halt;
+    private int loaded;
 
     public SimpleSimulator(Loader loader, Register register, Memory memory) {
         this.loader = loader;
@@ -15,14 +16,16 @@ public class SimpleSimulator implements Simulator {
 
     @Override
     public void load() throws SMCException {
-        int loaded = 0;
+        this.loaded = 0;
         do {
             Integer value = this.loader.load();
             if (value == null)
-                return;
-            this.memory.set(loaded, value);
-            loaded += 1;
+                break;
+            this.memory.set(this.loaded, value);
+            System.out.printf("memory[%d]=%d\n", this.loaded, value);
+            this.loaded += 1;
         } while (true);
+        System.out.println();
     }
 
     @Override
@@ -69,16 +72,13 @@ public class SimpleSimulator implements Simulator {
 
     @Override
     public void printState() {
-        int value = this.memory.get(this.pc);
-        try {
-            Instruction instruction = loader.decode(value);
-            System.out.printf("PC: %d\n", this.pc);
-            System.out.printf("Instruction: %s\n", instruction);
-            System.out.printf("Halted: %b\n", this.halt);
-            System.out.print(this.register);
-            System.out.println();
-        } catch (SMCException ignored) {
-        }
+        System.out.println("@@@");
+        System.out.println("state:");
+        System.out.printf("\tpc %d\n", this.pc);
+        System.out.print(this.memory.toString(0, loaded));
+        System.out.print(this.register);
+        System.out.println("end state");
+        System.out.println();
     }
 
     private void executeR(InstructionR instruction) throws SMCException {

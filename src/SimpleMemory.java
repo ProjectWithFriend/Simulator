@@ -27,10 +27,12 @@ public class SimpleMemory implements Memory {
     @Override
     public String toString(Integer offset, Integer size) {
         StringBuilder builder = new StringBuilder();
+        builder.append("\tmemory:\n");
         for (int i = offset; i < size; i++) {
-            builder.append("Memory [")
+            builder.append("\t\t")
+                    .append("mem[ ")
                     .append(i)
-                    .append("]: ")
+                    .append(" ] ")
                     .append(this.get(i))
                     .append("\n");
         }

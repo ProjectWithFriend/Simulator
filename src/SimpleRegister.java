@@ -34,11 +34,13 @@ public class SimpleRegister implements Register {
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append("\tregisters:\n");
         for (int i = 1; i < 8; i++) {
             RegisterIndex index = RegisterIndex.values()[i];
-            builder.append("Register [$")
+            builder.append("\t\t")
+                    .append("reg[ ")
                     .append(i)
-                    .append("]: ")
+                    .append(" ] ")
                     .append(this.get(index))
                     .append("\n");
         }
