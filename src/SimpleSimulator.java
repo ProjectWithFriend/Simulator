@@ -5,6 +5,7 @@ public class SimpleSimulator implements Simulator {
     private int pc;
     private boolean halt;
     private int loaded;
+    private int executed;
 
     public SimpleSimulator(Loader loader, Register register, Memory memory) {
         this.loader = loader;
@@ -12,6 +13,7 @@ public class SimpleSimulator implements Simulator {
         this.memory = memory;
         this.halt = false;
         this.pc = 0;
+        this.executed = 0;
     }
 
     @Override
@@ -53,10 +55,13 @@ public class SimpleSimulator implements Simulator {
 
     @Override
     public void execute() throws SMCException {
+        this.executed = 0;
         while (!this.halt) {
             this.printState();
             this.step();
+            this.executed++;
         }
+        this.printState();
     }
 
     @Override
@@ -72,13 +77,18 @@ public class SimpleSimulator implements Simulator {
 
     @Override
     public void printState() {
+        if (this.halt) {
+            System.out.println("machine halted");
+            System.out.printf("total of %d instructions executed\n", this.executed);
+            System.out.println("final state of machine:");
+        }
+        System.out.println();
         System.out.println("@@@");
         System.out.println("state:");
         System.out.printf("\tpc %d\n", this.pc);
         System.out.print(this.memory.toString(0, loaded));
         System.out.print(this.register);
         System.out.println("end state");
-        System.out.println();
     }
 
     private void executeR(InstructionR instruction) throws SMCException {
