@@ -20,7 +20,6 @@ public abstract class SMCException extends Exception {
     public static final class FileNotFound extends SMCException {
     }
 
-    public static final class NotHaltedWithinLimit extends SMCException {}
     public static final class AlreadyHalted extends SMCException {
     }
 

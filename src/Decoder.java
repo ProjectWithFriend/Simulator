@@ -1,24 +1,42 @@
-public abstract class SimpleLoader implements Loader {
-    protected static int getOpcode(int value) {
+public interface Decoder {
+
+    /**
+     * decode given value into instruction instance
+     *
+     * @param value instruction in integer form
+     * @return instruction
+     * @throws SMCException if there are fails to load
+     */
+    static Instruction decode(int value) throws SMCException {
+        return switch (parseType(value)) {
+            case R -> parseR(value);
+            case I -> parseI(value);
+            case J -> parseJ(value);
+            case O -> parseO(value);
+            case Undefined -> throw new SMCException.InstructionTypeNotFound();
+        };
+    }
+
+    private static int getOpcode(int value) {
         return (value >> 22) & 0b111;
     }
 
-    protected static RegisterIndex getRd(int value) {
+    private static RegisterIndex getRd(int value) {
         int idx = value & 0b111;
         return RegisterIndex.values()[idx];
     }
 
-    protected static RegisterIndex getRt(int value) {
+    private static RegisterIndex getRt(int value) {
         int idx = (value >> 16) & 0b111;
         return RegisterIndex.values()[idx];
     }
 
-    protected static RegisterIndex getRs(int value) {
+    private static RegisterIndex getRs(int value) {
         int idx = (value >> 19) & 0b111;
         return RegisterIndex.values()[idx];
     }
 
-    protected static InstructionType parseType(int value) {
+    private static InstructionType parseType(int value) {
         int opcode = getOpcode(value);
         return switch (opcode) {
             case 0, 1 -> InstructionType.R;
@@ -29,7 +47,7 @@ public abstract class SimpleLoader implements Loader {
         };
     }
 
-    protected static InstructionName parseName(int value) {
+    private static InstructionName parseName(int value) {
         int opcode = getOpcode(value);
         return switch (opcode) {
             case 0 -> InstructionName.ADD;
@@ -44,19 +62,8 @@ public abstract class SimpleLoader implements Loader {
         };
     }
 
-    protected static Short getOffset(int value) {
+    private static Short getOffset(int value) {
         return (short) (value & 0xffff);
-    }
-
-    @Override
-    public Instruction decode(int value) throws SMCException {
-        return switch (parseType(value)) {
-            case R -> parseR(value);
-            case I -> parseI(value);
-            case J -> parseJ(value);
-            case O -> parseO(value);
-            case Undefined -> throw new SMCException.InstructionTypeNotFound();
-        };
     }
 
     private static Instruction parseR(int value) throws SMCException {

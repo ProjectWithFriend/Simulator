@@ -10,11 +10,5 @@ public abstract class Instruction {
         return this.name;
     }
 
-    public InstructionType type() {
-        return this.type;
-    }
-
-    public abstract Integer toInteger();
-
     public abstract String toString();
 }

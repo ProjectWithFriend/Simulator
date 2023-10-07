@@ -6,6 +6,7 @@ public class SimpleSimulator implements Simulator {
     private boolean halt;
     private int loaded;
     private int executed;
+    private final EasterEgg easterEgg;
 
     public SimpleSimulator(Loader loader, Register register, Memory memory) {
         this.loader = loader;
@@ -14,6 +15,7 @@ public class SimpleSimulator implements Simulator {
         this.halt = false;
         this.pc = 0;
         this.executed = 0;
+        this.easterEgg = new EasterEgg(register);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class SimpleSimulator implements Simulator {
             return;
 
         int value = this.memory.get(this.pc);
-        Instruction instruction = loader.decode(value);
+        Instruction instruction = Decoder.decode(value);
         this.pc += 1;
 
         if (instruction instanceof InstructionR)
@@ -51,6 +53,8 @@ public class SimpleSimulator implements Simulator {
             this.executeO((InstructionO) instruction);
         else
             throw new SMCException.InstructionTypeNotFound();
+
+        this.easterEgg.append(instruction);
     }
 
     @Override
@@ -63,17 +67,6 @@ public class SimpleSimulator implements Simulator {
         }
         this.printState();
     }
-
-    @Override
-    public void executeWithin(Integer maximumSteps) throws SMCException {
-        for (int step = 0; step <= maximumSteps && !this.halt; step++) {
-            this.printState();
-            this.step();
-        }
-        if (!this.halt)
-            throw new SMCException.NotHaltedWithinLimit();
-    }
-
 
     @Override
     public void printState() {

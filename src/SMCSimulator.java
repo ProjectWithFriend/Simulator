@@ -1,8 +1,6 @@
-import java.io.IOException;
-
-public class Main {
+public class SMCSimulator {
     public static void main(String[] args) throws SMCException {
-        if (args.length != 1) {
+        if (args.length != 1) { // check if program file presence
             System.out.println("please input program");
             return;
         }
