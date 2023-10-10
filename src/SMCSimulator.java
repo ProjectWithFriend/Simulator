@@ -6,12 +6,14 @@ public class SMCSimulator {
         }
         String programFile = args[0];
 
+        // initialize an instances that required by a simulator
         Loader loader = new DecimalStringLoader(programFile);
         Register register = new SimpleRegister();
         Memory memory = new SimpleMemory();
+        // we're using dependency injection for abstraction
         Simulator simulator = new SimpleSimulator(loader, register, memory);
 
-        simulator.load();
-        simulator.execute();
+        simulator.load(); // first, load a program into memory
+        simulator.execute(); // then, execute it
     }
 }
