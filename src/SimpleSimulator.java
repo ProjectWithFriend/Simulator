@@ -6,7 +6,6 @@ public class SimpleSimulator implements Simulator {
     private boolean halt;
     private int loaded;
     private int executed;
-    private final EasterEgg easterEgg;
 
     public SimpleSimulator(Loader loader, Register register, Memory memory) {
         this.loader = loader;
@@ -15,7 +14,6 @@ public class SimpleSimulator implements Simulator {
         this.halt = false;
         this.pc = 0;
         this.executed = 0;
-        this.easterEgg = new EasterEgg(register);
     }
 
     @Override
@@ -53,8 +51,6 @@ public class SimpleSimulator implements Simulator {
             this.executeO((InstructionO) instruction);
         else
             throw new SMCException.InstructionTypeNotFound();
-
-        this.easterEgg.append(instruction);
     }
 
     @Override
